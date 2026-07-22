@@ -1,0 +1,13 @@
+{
+  defaults: {
+    workspace: "./workspace",
+    sandbox: {
+      mode: "non-main",
+      scope: "agent",
+      workspaceAccess: "ro",
+    },
+    modelPolicy: {
+      allow: ["anthropic/*"],
+    },
+  },
+}

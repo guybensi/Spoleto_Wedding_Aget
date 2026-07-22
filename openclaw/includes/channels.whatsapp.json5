@@ -1,0 +1,9 @@
+{
+  dmPolicy: "disabled",
+  groupPolicy: "allowlist",
+  groups: {
+    "*": {
+      requireMention: true,
+    },
+  },
+}

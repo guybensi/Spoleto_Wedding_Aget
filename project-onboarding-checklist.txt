@@ -1,0 +1,625 @@
+PRE-IMPLEMENTATION ONBOARDING GUIDE
+
+This is the external setup checklist to complete before writing code for the Spoleto travel assistant. It assumes the current architecture stays the same: OpenClaw as the main runtime, native WhatsApp integration, Claude models, Python for ingestion support, Docker for packaging, and a production target of one private deployment.
+
+RECOMMENDED ORDER
+
+1. Decide hosting and ownership boundaries.
+2. Create core accounts and billing.
+3. Prepare the developer workstation.
+4. Set up GitHub project controls.
+5. Prepare WhatsApp numbers and groups.
+6. Prepare source documents and data hygiene rules.
+7. Decide secrets handling.
+8. Prepare staging and production environments.
+9. Run safe test onboarding before real guests are invited.
+
+1. OWNERSHIP AND HOSTING DECISIONS
+
+1. Define the operator trust boundary.
+Why: OpenClaw is safest when treated as one trusted operator boundary, not a multi-tenant public bot.
+Mandatory: Yes.
+When: Before any account creation or deployment choice.
+Docs: https://docs.openclaw.ai/gateway/security
+
+2. Decide whether to use a dedicated WhatsApp number.
+Why: It creates cleaner separation between your personal identity and the assistant, and it reduces self-chat confusion.
+Mandatory: Strongly recommended.
+When: Before WhatsApp setup.
+Docs: https://docs.openclaw.ai/channels/whatsapp
+
+3. Choose the production hosting model.
+Why: This choice affects secrets, uptime, backups, SSH access, storage, and how QR-based WhatsApp linking will be handled.
+Mandatory: Yes.
+When: Before implementation begins.
+Docs: https://docs.openclaw.ai/install/docker
+
+4. Choose staging versus production separation.
+Why: You need a safe environment to test QR linking, reminders, group behavior, and document ingestion without touching the real guest group.
+Mandatory: Yes.
+When: Before any integration testing.
+Docs: https://docs.openclaw.ai/channels/whatsapp
+
+2. GITHUB SETUP
+
+1. Create a private GitHub repository.
+Why: The repo will eventually contain prompts, deployment config, docs, and possibly sanitized fixtures. This project should not be public by default.
+Mandatory: Yes.
+When: Before first real project commit.
+Docs: https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository
+
+2. Choose a branch strategy.
+Why: It prevents ad hoc changes landing directly in production configuration.
+Mandatory: Yes.
+When: Before the first collaborator or pull request.
+Recommendation: main protected, short-lived feature branches, optional staging branch only if you want environment-specific releases.
+Docs: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches
+
+3. Enable branch protection on main.
+Why: Prevents accidental force-pushes and direct unreviewed changes.
+Mandatory: Yes.
+When: Immediately after repo creation.
+Docs: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches
+
+4. Create a label taxonomy.
+Why: The roadmap is large enough that issues will become unmanageable without labels.
+Mandatory: Yes.
+When: Before creating backlog issues.
+Recommended labels: type:feature, type:bug, type:ops, type:docs, type:security, priority:p0, priority:p1, priority:p2, area:openclaw, area:ingestion, area:prompts, area:deployment, area:testing.
+Docs: https://docs.github.com/en/issues/using-labels-and-milestones-to-track-work/managing-labels
+
+5. Create a GitHub Project.
+Why: The issue list should map to milestones, status, priority, and risk.
+Mandatory: Yes.
+When: Before issue decomposition.
+Recommendation: add fields for Priority, Area, Complexity, Environment, Target milestone.
+Docs: https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects
+
+6. Create milestone buckets.
+Why: The roadmap already divides naturally into foundation, ingestion, tools, testing, and launch.
+Mandatory: Recommended.
+When: Before backlog import.
+Docs: https://docs.github.com/en/issues/using-labels-and-milestones-to-track-work/about-milestones
+
+7. Create implementation issues from the roadmap.
+Why: The spec is too large to execute without issue-level units.
+Mandatory: Yes.
+When: Before implementation begins.
+Docs: https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues
+
+8. Enable GitHub Actions.
+Why: CI, linting, test automation, secret-scoped deployments, and validation will live there later.
+Mandatory: Yes.
+When: Before the first workflow is added.
+Docs: https://docs.github.com/en/actions
+
+9. Define GitHub environments.
+Why: Separate secrets and approval rules for staging and production.
+Mandatory: Recommended.
+When: Before deployment automation.
+Docs: https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+
+10. Prepare repository and environment secrets.
+Why: Deployment and CI should not depend on local developer secrets.
+Mandatory: Yes for any CI/CD beyond local-only.
+When: Before deployment workflows are written.
+Docs: https://docs.github.com/en/actions/security-guides/encrypted-secrets
+
+3. OPENCLAW PREPARATION
+
+1. Decide install mode: source checkout or packaged install.
+Why: Source checkout is better for active development; packaged install is simpler for pure runtime testing.
+Mandatory: Yes.
+When: Before local runtime setup.
+Recommendation: source checkout for development, Dockerized runtime for staging and production.
+Docs: https://docs.openclaw.ai/start/getting-started
+
+2. Install OpenClaw prerequisites.
+Why: OpenClaw requires supported Node versions and optionally Docker depending on runtime choice.
+Mandatory: Yes.
+When: Before onboarding.
+Docs: https://docs.openclaw.ai/start/getting-started
+
+3. Confirm supported Node version.
+Why: OpenClaw requires a compatible Node runtime.
+Mandatory: Yes.
+When: Before installing OpenClaw.
+Recommendation: Node 24 LTS.
+Docs: https://docs.openclaw.ai/start/getting-started
+Docs: https://nodejs.org/en/download
+
+4. Decide the OpenClaw workspace location strategy.
+Why: Workspace files, prompts, memory, and state need predictable ownership and backup behavior.
+Mandatory: Yes.
+When: Before onboarding.
+Docs: https://docs.openclaw.ai/concepts/agent
+
+5. Decide whether the gateway itself runs in Docker.
+Why: This changes how local auth, persistence, QR workflows, and debugging work.
+Mandatory: Yes.
+When: Before staging environment setup.
+Docs: https://docs.openclaw.ai/install/docker
+
+6. Plan OpenClaw configuration structure.
+Why: This project will need modular config for agents, tools, channels, hooks, and security.
+Mandatory: Yes.
+When: Before implementation begins.
+Recommendation: split openclaw.json with includes from day one.
+Docs: https://docs.openclaw.ai/gateway/configuration
+
+7. Decide initial OpenClaw security posture.
+Why: The guest-facing agent should start with minimal tools and explicit mention gating.
+Mandatory: Yes.
+When: Before the first WhatsApp test.
+Docs: https://docs.openclaw.ai/gateway/security
+
+4. ANTHROPIC PREPARATION
+
+1. Create an Anthropic API account.
+Why: Claude model access is the primary LLM dependency in this architecture.
+Mandatory: Yes.
+When: Before the first real OpenClaw onboarding with model access.
+Docs: https://platform.claude.com/
+
+2. Generate an API key.
+Why: The runtime will need a non-interactive key for stable development, staging, and production use.
+Mandatory: Yes.
+When: Before local model integration testing.
+Docs: https://platform.claude.com/settings/keys
+
+3. Enable billing and set a budget.
+Why: Avoids onboarding failures and surprise charges once OCR verification, live search, and repeated testing begin.
+Mandatory: Yes.
+When: Before any meaningful testing.
+Docs: https://platform.claude.com/
+Docs: https://support.claude.com/
+
+4. Decide whether to use API-key access or Claude CLI login anywhere.
+Why: API keys are better for production automation; CLI login is less predictable for unattended workloads.
+Mandatory: Yes.
+When: Before deployment design is finalized.
+Recommendation: use API keys for staging and production.
+Docs: https://docs.openclaw.ai/install/docker
+
+5. Record usage-owner and billing-owner.
+Why: Someone must explicitly own renewals, invoices, and abuse or quota events.
+Mandatory: Recommended.
+When: Before team collaboration or production launch.
+Docs: https://support.claude.com/
+
+5. WHATSAPP PREPARATION
+
+1. Choose the integration method.
+Why: The current architecture assumes OpenClaw native WhatsApp support, not Twilio or Meta Cloud API.
+Mandatory: Yes.
+When: Before any bot phone number setup.
+Recommendation: keep OpenClaw native WhatsApp.
+Docs: https://docs.openclaw.ai/channels/whatsapp
+
+2. Choose the phone number strategy.
+Why: Dedicated number is cleaner and safer than linking your personal number.
+Mandatory: Yes.
+When: Before QR linking.
+Docs: https://docs.openclaw.ai/channels/whatsapp
+
+3. Create the real travel group.
+Why: The production assistant needs a known final group target and administrators.
+Mandatory: Yes.
+When: Before production rollout, not before early testing.
+Recommendation: do not add the bot until staging is complete.
+
+4. Create a separate bot testing group.
+Why: You need a safe place to test mentions, replies, reminders, bad prompts, and reconnect behavior.
+Mandatory: Yes.
+When: Before the first WhatsApp integration test.
+Recommendation: only you and 1-2 trusted testers in this group.
+Docs: https://docs.openclaw.ai/channels/whatsapp
+
+5. Decide group admins and moderation rules.
+Why: You should know who can change group settings, remove the bot, or pin operational messages.
+Mandatory: Recommended.
+When: Before adding real guests.
+
+6. Decide mention name and activation patterns.
+Why: The bot should answer only when explicitly called and should have stable name triggers.
+Mandatory: Yes.
+When: Before prompt and channel config work.
+Docs: https://docs.openclaw.ai/gateway/configuration
+Docs: https://docs.openclaw.ai/channels/whatsapp
+
+7. Decide whether DMs are enabled at all.
+Why: Enabling DMs creates privacy and session-isolation requirements.
+Mandatory: Yes.
+When: Before the first live deployment.
+Recommendation: start with group-only, then add DMs later if needed.
+Docs: https://docs.openclaw.ai/concepts/session
+Docs: https://docs.openclaw.ai/gateway/security
+
+8. Plan QR login handling.
+Why: OpenClaw WhatsApp login is QR-based and must be done reliably from the chosen host.
+Mandatory: Yes.
+When: Before staging deployment on a headless machine.
+Docs: https://docs.openclaw.ai/channels/whatsapp
+
+6. DOCKER PREPARATION
+
+1. Install Docker.
+Why: Required for the chosen deployment model and likely for local parity.
+Mandatory: Yes for staging and production.
+When: Before containerized testing.
+Docs: https://docs.docker.com/get-started/get-docker/
+
+2. Confirm Docker Compose v2 availability.
+Why: The stack is multi-service and will depend on Compose for orchestration.
+Mandatory: Yes.
+When: Before writing deployment files.
+Docs: https://docs.docker.com/compose/
+
+3. Decide persistent storage layout.
+Why: OpenClaw state, WhatsApp auth, workspace, logs, and trip data must survive container replacement.
+Mandatory: Yes.
+When: Before staging deployment.
+Docs: https://docs.openclaw.ai/install/docker
+Docs: https://docs.docker.com/engine/storage/volumes/
+
+4. Decide bind mounts versus named volumes.
+Why: You will likely want bind mounts for editable project data and volumes for state persistence.
+Mandatory: Yes.
+When: Before deployment compose design.
+Recommendation: bind mount project workspace and trip data; use managed volumes for runtime state if operationally simpler.
+Docs: https://docs.docker.com/engine/storage/volumes/
+
+5. Define backup targets for Docker-managed state.
+Why: QR auth state and operational data are expensive to lose.
+Mandatory: Yes.
+When: Before production.
+Docs: https://docs.docker.com/engine/storage/volumes/
+
+6. Decide whether to enable OpenClaw sandboxing.
+Why: The guest-facing group assistant should run with constrained tool execution.
+Mandatory: Strongly recommended.
+When: Before any public or shared-room usage.
+Docs: https://docs.openclaw.ai/gateway/configuration
+Docs: https://docs.openclaw.ai/install/docker
+
+7. DEVELOPMENT ENVIRONMENT PREPARATION
+
+1. Install VS Code stable.
+Why: It is the main IDE and integrates well with Git, Python, Node, Docker, and agent workflows.
+Mandatory: Yes.
+When: Before implementation.
+Docs: https://code.visualstudio.com/docs/setup/setup-overview
+
+2. Sign into VS Code with GitHub.
+Why: Needed for Copilot and smoother repository workflow.
+Mandatory: Yes if using Copilot-based workflows.
+When: Before coding sessions start.
+Docs: https://code.visualstudio.com/docs/getstarted/overview
+
+3. Install Git.
+Why: Required for source control, branching, rebasing, and CI workflows.
+Mandatory: Yes.
+When: Before repo initialization or clone.
+Docs: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+
+4. Install Node.js 24 LTS.
+Why: Required for OpenClaw and related CLI tooling.
+Mandatory: Yes.
+When: Before OpenClaw setup.
+Docs: https://nodejs.org/en/download
+
+5. Install Python.
+Why: Required for OCR, ETL, and support tooling.
+Mandatory: Yes.
+When: Before ingestion design work begins.
+Recommendation: Python 3.13 or 3.14 stable.
+Docs: https://www.python.org/downloads/
+
+6. Install Docker Desktop or Docker Engine.
+Why: Needed for runtime parity and deployment testing.
+Mandatory: Yes for your chosen architecture.
+When: Before staging workflow design.
+Docs: https://docs.docker.com/get-started/get-docker/
+
+7. Install GitHub CLI.
+Why: Useful for repo setup, secrets, labels, issues, and workflow debugging.
+Mandatory: Optional but strongly recommended.
+When: Early, before GitHub admin work scales.
+Docs: https://cli.github.com/
+
+8. Install GitHub Copilot CLI if you plan to use terminal AI workflows.
+Why: Helpful, but not required by the project architecture itself.
+Mandatory: Optional.
+When: Any time before active development.
+Docs: https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-in-the-cli
+
+9. Decide local shell and package manager conventions.
+Why: Avoids cross-machine confusion in scripts and onboarding docs.
+Mandatory: Recommended.
+When: Before writing project runbooks.
+Recommendation: PowerShell on Windows, Bash inside containers and Linux hosts.
+
+8. DEPLOYMENT OPTIONS COMPARISON
+
+LOCAL MACHINE
+Advantages: fastest start, cheapest, easiest QR login, best debugging.
+Disadvantages: poor uptime, tied to your laptop, sleep and restart risk, weaker production hygiene.
+Use for: local development only.
+Recommendation: not for production.
+
+RASPBERRY PI
+Advantages: cheap, low power, self-hosted, always-on if configured well.
+Disadvantages: weaker CPU and I/O, SD-card wear unless using SSD, more hands-on ops, less forgiving for OCR and multi-service Docker stacks.
+Use for: hobby staging or cost-sensitive personal deployment.
+Recommendation: only if you already operate Pi infrastructure and use SSD plus good backup discipline.
+Docs: https://www.raspberrypi.com/documentation/computers/getting-started.html
+
+VPS
+Advantages: best balance of reliability, cost, control, SSH access, persistent storage, and easy Docker support.
+Disadvantages: you manage OS patching, firewalling, backups, and host security.
+Use for: primary production recommendation.
+Recommendation: best fit for this project.
+
+RAILWAY
+Advantages: fast PaaS setup, good DX, easy variables and volumes, simpler than raw cloud.
+Disadvantages: less natural fit for long-lived QR-linked stateful WhatsApp automation than a plain VPS, more abstraction during debugging, less control over host-level concerns.
+Use for: fast prototypes or if you strongly prefer managed deployment.
+Recommendation: acceptable, but not my first choice here.
+Docs: https://docs.railway.com/
+
+FLY.IO
+Advantages: strong networking, good Docker support, mature docs, flexible runtime options.
+Disadvantages: more operational complexity than this project needs, stateful volumes and regional placement are more involved, steeper learning curve for a small private assistant.
+Use for: teams already comfortable with Fly.
+Recommendation: viable, but not optimal for a first build.
+Docs: https://fly.io/docs/
+
+RENDER
+Advantages: polished managed platform, Docker support, disks, logs, managed operational surface.
+Disadvantages: still more indirect than a plain VPS for QR-based long-lived messaging runtimes and host-level recovery.
+Use for: managed-platform preference with lower ops burden.
+Recommendation: strongest managed-platform alternative to a VPS.
+Docs: https://render.com/docs
+
+DIGITALOCEAN
+Advantages: simple droplets, clear docs, common Linux admin path, easy SSH-key workflows.
+Disadvantages: if using a Droplet, you still manage everything yourself; if using App Platform, you inherit managed-platform constraints.
+Use for: VPS deployment, especially if you already use DigitalOcean.
+Recommendation: good VPS provider choice.
+Docs: https://docs.digitalocean.com/products/droplets/
+
+BEST OPTION FOR THIS PROJECT
+Best choice: a small Linux VPS with Docker Compose.
+Why: this assistant is stateful, QR-linked, long-running, private, and operationally simple enough that a VPS gives you the cleanest control without overengineering. If you want managed hosting, Render is the best alternative from this list.
+Useful docs:
+- OpenClaw Docker: https://docs.openclaw.ai/install/docker
+- Railway docs: https://docs.railway.com/
+- Fly.io docs: https://fly.io/docs/
+- Render docs: https://render.com/docs
+- DigitalOcean Droplets: https://docs.digitalocean.com/products/droplets/
+
+9. SECRETS MANAGEMENT CHECKLIST
+
+1. Choose a secret manager approach.
+Why: secrets must not live in source code, prompt files, or plaintext shared docs.
+Mandatory: Yes.
+When: Before any key is created.
+Recommendation: local .env only for development; production secrets in host environment or a managed secret store.
+Docs: https://docs.openclaw.ai/gateway/configuration
+Docs: https://docs.github.com/en/actions/security-guides/encrypted-secrets
+
+2. Inventory all expected secrets.
+Why: you should know what needs rotation, backup protection, and access control.
+Mandatory: Yes.
+When: Before implementation.
+Expected secrets in this architecture:
+- ANTHROPIC_API_KEY
+- OPENCLAW_GATEWAY_TOKEN or gateway password
+- WhatsApp linked-device auth state files under OpenClaw credentials
+- Search provider API key if used
+- Weather provider API key if used
+- Currency or flight provider API key if used later
+- Hook token if webhooks are enabled
+- GitHub Actions deployment secrets
+- VPS SSH private key
+- Tailscale auth key if Tailscale is used
+- Backup encryption passphrase or key
+- Optional SMTP or API tokens for alerts
+- Optional Gmail or email integration OAuth credentials if email search is added later
+
+3. Define who can access which secret.
+Why: local dev access should not equal production access.
+Mandatory: Yes.
+When: Before team collaboration or CI and CD.
+
+4. Define rotation rules.
+Why: tokens for gateways, providers, and SSH access should be replaceable without ad hoc cleanup.
+Mandatory: Recommended.
+When: Before production.
+
+5. Define backup and restore treatment for secret-bearing files.
+Why: WhatsApp auth state and OpenClaw state are sensitive but operationally critical.
+Mandatory: Yes.
+When: Before production backups start.
+
+10. DOCUMENT PREPARATION CHECKLIST
+
+1. Gather final itinerary assets.
+Why: this is the core private knowledge source.
+Mandatory: Yes.
+When: Before ingestion pipeline design is finalized.
+
+2. Gather transportation schedules.
+Why: transport timing is a top-tier guest question source.
+Mandatory: Yes.
+When: Before ingestion schema work.
+
+3. Gather hotel details.
+Why: guests will ask addresses, check-in rules, transport links, and contact details.
+Mandatory: Yes.
+When: Before private knowledge modeling.
+
+4. Gather wedding schedule documents.
+Why: this is core event logic and reminder content.
+Mandatory: Yes.
+When: Before MVP scope lock.
+
+5. Gather restaurant reservations.
+Why: reservation names, times, and party sizes are logistics-critical.
+Mandatory: Yes.
+When: Before ingestion testing.
+
+6. Gather guest logistics notes.
+Why: shuttle, arrival windows, rooming, and meeting-point data are likely hidden in informal documents.
+Mandatory: Yes.
+When: Before knowledge normalization.
+
+7. Gather emergency contacts.
+Why: guests need trustworthy emergency and support information.
+Mandatory: Yes.
+When: Before live deployment.
+
+8. Gather curated recommendations.
+Why: curated recommendations are higher-trust than web search and should rank first.
+Mandatory: Yes.
+When: Before recommendation features are designed.
+
+9. Prepare a starter FAQ.
+Why: it reduces ambiguity and helps seed the first regression tests.
+Mandatory: Strongly recommended.
+When: Before prompt and retrieval work.
+
+10. Normalize source formats and naming.
+Why: naming and versioning matter for repeatable ingestion and change tracking.
+Mandatory: Yes.
+When: Before ingestion work starts.
+Recommendation: one manifest spreadsheet or table with source filename, document type, version, owner, date received, and review status.
+
+11. Separate public-shareable documents from private-only documents.
+Why: some files may include guest names, room assignments, or emergency contact information that should not be broadly surfaced.
+Mandatory: Yes.
+When: Before any test dataset is shared with collaborators.
+
+Suggested document inventory:
+- itinerary PNGs
+- transportation schedules
+- hotel details
+- curated recommendations
+- FAQ draft
+- emergency contacts
+- wedding schedule
+- restaurant reservations
+- guest logistics notes
+
+11. TESTING BEFORE REAL GUESTS
+
+1. Use a separate test WhatsApp group.
+Why: never test reply behavior, reminders, or failures in the real guest group first.
+Mandatory: Yes.
+When: Before first WhatsApp integration test.
+
+2. Use either a dedicated staging WhatsApp number or a cloned staging state.
+Why: you need to test relinking, disconnects, and group behavior without risking the production identity.
+Mandatory: Strongly recommended.
+When: Before staging rollout.
+
+3. Use fake or sanitized trip documents first.
+Why: this lets you test ingestion, OCR, and prompting without exposing guest data too early.
+Mandatory: Yes.
+When: Before the first end-to-end test.
+
+4. Define test scenarios before implementation.
+Why: safe testing is much easier when expected answers are known in advance.
+Mandatory: Yes.
+When: Before the first integrated prototype.
+Minimum scenarios:
+- itinerary lookup
+- hotel question
+- translation
+- pharmacy lookup
+- wrong-date conflict
+- missing-info refusal
+- reminder send
+- reconnect recovery
+
+5. Test reminder delivery only in staging first.
+Why: scheduled messages are the fastest way to create embarrassing failures in a real group.
+Mandatory: Yes.
+When: Before any cron use in production.
+
+6. Run failure drills.
+Why: you need operational confidence, not only happy-path success.
+Mandatory: Recommended.
+When: Before production.
+Drills:
+- lost WhatsApp auth
+- bad OCR extraction
+- missing API key
+- gateway restart
+- corrupted config
+- provider outage
+
+7. Prepare a rollback and kill-switch procedure.
+Why: if the bot misbehaves in the guest group, you need a fast stop path.
+Mandatory: Yes.
+When: Before inviting real guests.
+Recommendation: documented command to stop gateway, remove group access, and disable reminders.
+
+12. NICE-TO-HAVE PREPARATION
+
+1. Set up Tailscale for admin access.
+Why: safer remote management than exposing dashboards publicly.
+Mandatory: Optional but strongly recommended for VPS use.
+When: Before production ops.
+Docs: https://docs.openclaw.ai/gateway/security
+
+2. Create an operations runbook document.
+Why: relinking WhatsApp, rotating keys, restoring backups, and pausing reminders should not depend on memory.
+Mandatory: Recommended.
+When: Before staging.
+
+3. Create a cost budget sheet.
+Why: Claude usage, optional APIs, VPS cost, and backup or storage costs should be visible before launch.
+Mandatory: Recommended.
+When: Before production approval.
+
+4. Reserve a staging calendar and timeline.
+Why: reminders and itinerary logic need realistic date-based testing.
+Mandatory: Recommended.
+When: Before integration testing.
+
+5. Prepare anonymized fixture documents.
+Why: useful for CI, demos, future trip reuse, and collaboration without exposing private details.
+Mandatory: Recommended.
+When: Before shared development work begins.
+
+6. Decide post-trip archival policy now.
+Why: privacy and cleanup are easier if defined before data starts accumulating.
+Mandatory: Recommended.
+When: Before production.
+
+MINIMUM GO OR NO-GO CHECKLIST BEFORE CODING
+
+1. Private GitHub repo exists with branch protection, labels, project board, and initial issues.
+2. Anthropic API account, API key, and billing are active.
+3. Node, Python, Git, VS Code, and Docker are installed on the developer machine.
+4. Production hosting choice is made.
+5. Dedicated WhatsApp strategy is decided.
+6. Test WhatsApp group exists.
+7. Secret handling approach is decided.
+8. Core trip documents are collected and named consistently.
+9. Staging versus production separation is defined.
+10. Rollback and kill-switch concept is agreed before group exposure.
+
+RECOMMENDED STARTING STACK
+
+1. Private GitHub repository
+2. Node 24 LTS
+3. Python 3.13 or 3.14
+4. VS Code stable
+5. Docker Desktop locally, Docker Engine on a Linux VPS
+6. OpenClaw source-based development workflow
+7. Anthropic API-key access, not CLI-only auth
+8. Dedicated WhatsApp number
+9. Separate staging test group
+10. Production on a small VPS with Docker Compose

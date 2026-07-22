@@ -1,0 +1,17 @@
+.DS_Store
+Thumbs.db
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.env
+.env.*
+*.pyc
+*.pyo
+*.pyd
+dist/
+build/
+node_modules/
+.openclaw/

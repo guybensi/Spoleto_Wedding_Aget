@@ -1,0 +1,6 @@
+{
+  agents: { $include: "./includes/agents.json5" },
+  channels: { whatsapp: { $include: "./includes/channels.whatsapp.json5" } },
+  tools: { $include: "./includes/tools.json5" },
+  hooks: { $include: "./includes/hooks.json5" },
+}

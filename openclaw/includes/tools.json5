@@ -1,0 +1,13 @@
+{
+  profile: "messaging",
+  deny: [
+    "apply_patch",
+    "browser",
+    "cron",
+    "edit",
+    "exec",
+    "gateway",
+    "process",
+    "write",
+  ],
+}
