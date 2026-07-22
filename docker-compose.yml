@@ -5,6 +5,9 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      OPENCLAW_CONFIG_PATH: /app/openclaw/openclaw.json5
+      OPENCLAW_WORKSPACE: /app/workspace
     volumes:
       - ./openclaw:/app/openclaw:ro
       - ./workspace:/app/workspace:ro
@@ -20,10 +23,22 @@ services:
     restart: "no"
     env_file:
       - .env
+    command:
+      [
+        "spoleto-ingest",
+        "--input-dir",
+        "/app/data/raw/images",
+        "--output-dir",
+        "/app/data/processed",
+        "--provider",
+        "mock",
+      ]
     volumes:
       - ./data:/app/data
       - ./services:/app/services
       - ./tests:/app/tests:ro
+      - ./prompts:/app/prompts:ro
+      - ./workspace:/app/workspace
 
 volumes:
   openclaw-state:

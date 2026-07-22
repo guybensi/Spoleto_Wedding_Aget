@@ -1,0 +1,12 @@
+{
+  "meal_windows": [
+    {
+      "date": "",
+      "meal_type": "",
+      "location": "",
+      "menu_items": [""],
+      "dietary_notes": ""
+    }
+  ],
+  "general_notes": ""
+}

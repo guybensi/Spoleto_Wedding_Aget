@@ -1,0 +1,11 @@
+{
+  "rooms": [
+    {
+      "room_number": "",
+      "guest_names": [""],
+      "bed_type": "",
+      "special_requests": "",
+      "notes": ""
+    }
+  ]
+}

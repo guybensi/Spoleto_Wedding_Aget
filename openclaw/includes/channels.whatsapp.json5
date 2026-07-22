@@ -1,9 +1,16 @@
 {
   dmPolicy: "disabled",
   groupPolicy: "allowlist",
+  allowlist: {
+    // Replace with real group IDs before production.
+    groups: [
+      "GROUP_ID_PLACEHOLDER",
+    ],
+  },
   groups: {
     "*": {
       requireMention: true,
+      mentionOnly: true,
     },
   },
 }

@@ -1,0 +1,11 @@
+{
+  "hotel_name": "",
+  "address": "",
+  "front_desk_phone": "",
+  "check_in_time": "",
+  "check_out_time": "",
+  "breakfast_hours": "",
+  "facilities": [""],
+  "important_policies": [""],
+  "notes": ""
+}

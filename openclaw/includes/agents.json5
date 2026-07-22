@@ -1,6 +1,7 @@
 {
   defaults: {
     workspace: "./workspace",
+    systemPromptPath: "./workspace/system_prompt.md",
     sandbox: {
       mode: "non-main",
       scope: "agent",
@@ -9,5 +10,9 @@
     modelPolicy: {
       allow: ["anthropic/*"],
     },
+  },
+  spoleto_assistant: {
+    displayName: "Spoleto Wedding Assistant",
+    description: "Private-trip-first WhatsApp concierge",
   },
 }

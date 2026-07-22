@@ -1,27 +1,38 @@
 # Ingestion Service
 
-This directory will contain the Python support service responsible for:
+This package implements the first runnable ingestion MVP.
 
-- file intake and manifests
-- OCR and vision-orchestrated extraction
-- normalization into canonical trip schemas
-- provenance capture
-- publish workflows for retrieval-ready knowledge bundles
+## Capabilities
 
-The first executable implementation slice for this service will add:
+- CLI intake of PNG files from `data/raw/images`
+- Provider interface for OCR/vision extraction
+- Mock provider for local testing with no API calls
+- Normalization and validation into canonical schemas
+- JSON output written to `data/processed`
 
-1. a Python package skeleton
-2. schema definitions
-3. fixture-based tests for source normalization
+## Commands
 
-## Current implementation
+Install editable package from repository root:
 
-The repository now includes a manifest loader for raw source documents. It validates:
+```powershell
+py -3.11 -m pip install -e .
+```
 
-- trip id presence
-- non-empty document lists
-- allowed document types
-- allowed source file formats
+Run ingestion with the mock provider:
 
-The next step is to extend this into typed normalization and ingestion pipelines.
+```powershell
+spoleto-ingest --input-dir data/raw/images --output-dir data/processed --provider mock
+```
+
+Assemble modular prompts:
+
+```powershell
+spoleto-assemble-prompt --base-dir prompts/base --output workspace/system_prompt.md
+```
+
+Validate startup prerequisites:
+
+```powershell
+spoleto-validate-startup --root .
+```
 

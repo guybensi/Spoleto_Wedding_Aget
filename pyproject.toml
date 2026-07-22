@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spoleto-wedding-agent"
+version = "0.1.0"
+description = "MVP ingestion and runtime utilities for the Spoleto wedding assistant"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+spoleto-ingest = "spoleto_ingestion.cli:main"
+spoleto-assemble-prompt = "spoleto_ingestion.prompt_assembly:main"
+spoleto-validate-startup = "spoleto_ingestion.startup_validation:main"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.package-dir]
+"" = "services/ingestion"
+
+[tool.setuptools.packages.find]
+where = ["services/ingestion"]

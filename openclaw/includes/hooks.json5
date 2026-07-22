@@ -1,4 +1,6 @@
 {
   enabled: false,
   path: "/hooks",
+  onStartup: [],
+  onMessage: [],
 }

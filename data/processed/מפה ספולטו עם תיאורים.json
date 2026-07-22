@@ -1,0 +1,31 @@
+{
+  "source_file": "מפה ספולטו עם תיאורים.png",
+  "sections": {
+    "itinerary": {
+      "title": "Auto mock for מפה ספולטו עם תיאורים",
+      "day": "TBD",
+      "details": "Extract details manually from uploaded image."
+    },
+    "transportation": {
+      "mode": "TBD",
+      "departure": "TBD",
+      "arrival": "TBD",
+      "details": "Transportation details pending review."
+    },
+    "accommodation": {
+      "hotel_name": "TBD",
+      "address": "TBD",
+      "check_in": "TBD",
+      "check_out": "TBD"
+    },
+    "recommendations": {
+      "category": "General",
+      "item": "Review image content",
+      "notes": "Populate with verified recommendations."
+    },
+    "faq": {
+      "question": "What does מפה ספולטו עם תיאורים.png contain?",
+      "answer": "Pending manual extraction or real OCR provider integration."
+    }
+  }
+}

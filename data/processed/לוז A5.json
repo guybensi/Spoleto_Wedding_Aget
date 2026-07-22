@@ -1,0 +1,31 @@
+{
+  "source_file": "לוז A5.png",
+  "sections": {
+    "itinerary": {
+      "title": "Auto mock for לוז A5",
+      "day": "TBD",
+      "details": "Extract details manually from uploaded image."
+    },
+    "transportation": {
+      "mode": "TBD",
+      "departure": "TBD",
+      "arrival": "TBD",
+      "details": "Transportation details pending review."
+    },
+    "accommodation": {
+      "hotel_name": "TBD",
+      "address": "TBD",
+      "check_in": "TBD",
+      "check_out": "TBD"
+    },
+    "recommendations": {
+      "category": "General",
+      "item": "Review image content",
+      "notes": "Populate with verified recommendations."
+    },
+    "faq": {
+      "question": "What does לוז A5.png contain?",
+      "answer": "Pending manual extraction or real OCR provider integration."
+    }
+  }
+}

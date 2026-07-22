@@ -1,5 +1,11 @@
 {
   profile: "messaging",
+  allow: [
+    "memory",
+    "read",
+    "search",
+    "web",
+  ],
   deny: [
     "apply_patch",
     "browser",
@@ -10,4 +16,8 @@
     "process",
     "write",
   ],
+  retrieval: {
+    privateFirst: true,
+    allowWebFallback: true,
+  },
 }

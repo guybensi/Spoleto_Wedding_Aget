@@ -5,6 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+COPY pyproject.toml /app/pyproject.toml
 COPY README.md /app/README.md
 COPY services /app/services
 COPY tests /app/tests
@@ -13,4 +14,6 @@ COPY prompts /app/prompts
 COPY workspace /app/workspace
 COPY openclaw /app/openclaw
 
-CMD ["python", "-m", "unittest", "discover", "-s", "tests"]
+RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -e .
+
+CMD ["spoleto-ingest", "--input-dir", "/app/data/raw/images", "--output-dir", "/app/data/processed", "--provider", "mock"]

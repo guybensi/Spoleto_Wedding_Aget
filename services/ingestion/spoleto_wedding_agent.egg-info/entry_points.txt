@@ -1,0 +1,4 @@
+[console_scripts]
+spoleto-assemble-prompt = spoleto_ingestion.prompt_assembly:main
+spoleto-ingest = spoleto_ingestion.cli:main
+spoleto-validate-startup = spoleto_ingestion.startup_validation:main
