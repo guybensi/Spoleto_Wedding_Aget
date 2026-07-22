@@ -1,0 +1,29 @@
+services:
+  openclaw:
+    image: ghcr.io/openclaw/openclaw:latest
+    container_name: spoleto-openclaw
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./openclaw:/app/openclaw:ro
+      - ./workspace:/app/workspace:ro
+      - ./prompts:/app/prompts:ro
+      - ./data:/app/data
+      - openclaw-state:/root/.openclaw
+
+  ingestion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spoleto-ingestion
+    restart: "no"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./services:/app/services
+      - ./tests:/app/tests:ro
+
+volumes:
+  openclaw-state:

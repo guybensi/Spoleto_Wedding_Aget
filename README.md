@@ -28,6 +28,12 @@ Run the current test suite:
 py -3 -m unittest discover -s tests
 ```
 
+## Environment and packaging
+
+- Copy `.env.example` to `.env` for local development and fill in real values outside source control.
+- Use `docker-compose.yml` as the baseline local and VPS packaging layout.
+- See `docs/specification/deployment-baseline.md` for the current packaging assumptions.
+
 ## Next implementation slices
 
 1. Add CI to enforce the scaffold contract.
