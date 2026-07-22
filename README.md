@@ -22,10 +22,10 @@ Production-oriented project scaffold for a private WhatsApp travel assistant for
 
 ## Validation
 
-Run the scaffold contract test:
+Run the current test suite:
 
 ```powershell
-py -3 -m unittest tests.test_scaffold
+py -3 -m unittest discover -s tests
 ```
 
 ## Next implementation slices

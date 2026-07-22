@@ -1,0 +1,17 @@
+{
+  "trip_id": "spoleto-2026",
+  "documents": [
+    {
+      "path": "data/trips/spoleto-2026/raw/png/day-1-itinerary.png",
+      "document_type": "itinerary",
+      "version": "2026-07-20",
+      "owner": "organizers"
+    },
+    {
+      "path": "data/trips/spoleto-2026/raw/png/hotel-details.pdf",
+      "document_type": "hotel",
+      "version": "2026-07-20",
+      "owner": "organizers"
+    }
+  ]
+}
